@@ -2,7 +2,7 @@ close all; clear all; clc; addpath('src');
 % Generate Synthetic Vind using generated synthetic motion data
 %% Load synthetic motion data
 dataset_name = 'arduino_parallel';
-folder_path = strcat('../dataset/', dataset_name,'/data/');
+folder_path = strcat('../datasets/', dataset_name,'/data/');
 file_list = dir(strcat(folder_path,'*.csv'));
 
 %% MI system
@@ -17,6 +17,7 @@ tag_abcd = RESISTOR('S', 1).ABCD(f) * ...
     RESISTOR('P', 1e3).ABCD(f);
 
 dist = [0, 0.03];
+Ncoils = length(dist);
 
 %% Synthesize
 for n = 1:length(file_list)
@@ -25,13 +26,13 @@ for n = 1:length(file_list)
     data = readtable(file_path);
     Nt =  height(data);
     names = data.Properties.VariableNames;       
-    Ncoils = length(names(contains(names,'center')));
+%     Ncoils = length(names(contains(names,'center')));
     synth_vind = zeros(Nt,Ncoils);
     
     for t = 1:Nt
         norm = str2num(erase(data.norm{t}, ["[","]"]));
         
-        for i = 1:length(dist) 
+        for i = 1:Ncoils
             center_i = str2num(erase(data.center_1{t}, ["[","]"]));
             center_i = center_i + norm * dist(i); 
             if any(isnan(norm)) || any(isnan(center_i))
