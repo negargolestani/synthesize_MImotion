@@ -1,7 +1,7 @@
 close all; clear all; clc; addpath('src');
 % Generate Synthetic Vind using generated synthetic motion data
 %% Load synthetic motion data
-dataset_name = 'arduino_parallel';
+dataset_name = 'arduino_orthogonal';
 folder_path = strcat('../datasets/', dataset_name,'/data/');
 file_list = dir(strcat(folder_path,'*.csv'));
 
@@ -14,23 +14,27 @@ for n = 1:length(file_list)
     
     for i = 1:N
         s = data.(strcat('synth_vind_',num2str(i)));
-        m = data.(strcat('meas_vind_',num2str(i)));
-        
-%         s = (m - mean(m))/std(m) *std(s) + mean(s);
         s(s<0) = 0; s(s>5) = 5;
-        m(m<0) = 0; m(m>5) = 5;
-%         
+
+        m = data.(strcat('meas_vind_',num2str(i)));     
+        
         lag = getlag(m,s);
         if lag>0
             data = data(1:end-lag,:);
-            data.(strcat('meas_vind_',num2str(i))) = m(1+lag:end);
-            data.(strcat('synth_vind_',num2str(i))) = s(1:end-lag);
+            m = m(1+lag:end);
+            s = s(1:end-lag);
         else
             data = data(1-lag:end,:);
-            data.(strcat('meas_vind_',num2str(i))) = m(1:end+lag);
-            data.(strcat('synth_vind_',num2str(i))) = s(1-lag:end);
+            m = m(1:end+lag);
+            s = s(1-lag:end);
         end
+                
+        m = (m - mean(m))/std(m) *std(s) + mean(s);
+        m = (m+s)/2;
+        m(m<0) = 0; m(m>5) = 5;
         
+        data.(strcat('meas_vind_',num2str(i))) = m;
+        data.(strcat('synth_vind_',num2str(i))) = s;        
     end
         
     % Plot
@@ -49,6 +53,6 @@ for n = 1:length(file_list)
         title(strcat('Sensor_',num2str(i)));
         if i==N, xlabel('Time (s)'); end
     end
-        writetable(data, file_path)
+%         writetable(data, file_path)
     %     saveas(gcf,strcat('figs/',num2str(n),'.png'));
 end

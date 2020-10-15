@@ -1,5 +1,5 @@
 close all; clear all; clc; addpath('src');
-%% MI system
+%% Generate Vind for whole space 
 f=13.56e6;    Z01=50;   Z02=1e6;
 
 reader_coil = COIL( 15e-2, 1, 1);
