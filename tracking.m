@@ -8,13 +8,13 @@ file_name = file_list( 1 ).name;
 data = readtable( strcat(folder_path, file_name) );
 Nt =  height(data);
 
-for t = 1:Nt
+for t = 1:Nt 
     C1(t,:) = str2num(erase(data.center_1{t}, ["[","]"]))*100;
     norm(t,:) = str2num(erase(data.norm{t}, ["[","]"]));
     theta(t) = acos(norm(t, 3));
     phi(t) = mod(atan2(norm(t,2),norm(t,1)), 2*pi);
 end
-
+ 
 load('data/vind.mat');
 load('data/x_range.mat');
 load('data/y_range.mat');
