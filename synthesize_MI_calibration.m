@@ -30,7 +30,6 @@ for n = [5]
         end
                 
         m = (m - mean(m))/std(m) *std(s) + mean(s);
-        m = .7*m + .3*s;
         m(m<0) = 0; m(m>5) = 5;
         
         data.(strcat('meas_vind_',num2str(i))) = m;
